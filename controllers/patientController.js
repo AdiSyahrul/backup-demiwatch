@@ -139,12 +139,14 @@ async function updatePatient(req, res){
     if (typeof alamatTujuan === 'string') alamatTujuan = JSON.parse(alamatTujuan);
 
     alamatRumah = {
+      ...alamatRumah,
       name: alamatRumah.name,
       longi: alamatRumah.longitude || alamatRumah.longi,
       lat: alamatRumah.latitude || alamatRumah.lat
     };
 
     alamatTujuan = {
+      ...alamatTujuan,
       name: alamatTujuan.name,
       longi: alamatTujuan.longitude || alamatTujuan.longi,
       lat: alamatTujuan.latitude || alamatTujuan.lat
