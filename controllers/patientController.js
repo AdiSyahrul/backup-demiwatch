@@ -126,13 +126,13 @@ async function updatePatient(req, res){
 
     alamatRumah = {
       name: alamatRumah.name,
-      longi: alamatRumah.longi ,
-      lat: alamatRumah.lat 
+      longi: alamatRumah.longitude ,
+      lat: alamatRumah.latitude 
     };
     alamatTujuan = {
       name: alamatTujuan.name,
-      longi: alamatTujuan.longi || alamatTujuan.longitude,
-      lat: alamatTujuan.lat || alamatTujuan.latitude
+      longi:  alamatTujuan.longitude,
+      lat:  alamatTujuan.latitude
     };
     const updatedPatient = await Patient.findByIdAndUpdate(id, {
         nama,
