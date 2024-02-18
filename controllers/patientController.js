@@ -104,7 +104,7 @@ async function getPatient(req, res) {
 
 async function updatePatient(req, res){
   const { id } = req.params;
-  let { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan} = req.body;
+  const { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan} = req.body;
   try {
     let existingPatient = await Patient.findById(id);
     if (!existingPatient) {
@@ -122,30 +122,23 @@ async function updatePatient(req, res){
         error: 'You do not have permission to update this patient data'
       });
     }
-    
-    if (typeof alamatRumah === 'string') alamatRumah = JSON.parse(alamatRumah);
-    if (typeof alamatTujuan === 'string') alamatTujuan = JSON.parse(alamatTujuan);
+    const updatedPatient = await Patient.findByIdAndUpdate(id, {
+      nama,
+      umur,
+      jenisPenyakit,
+      catatan,
+      kode,
+      alamatRumah,
+      alamatTujuan,
+    }, { new: true });
 
-    alamatRumah = {
-      name: alamatRumah.name,
-      longi: alamatRumah.longi || alamatRumah.longitude,
-      lat: alamatRumah.lat || alamatRumah.latitude
-    };
-
-    alamatTujuan = {
-      name: alamatTujuan.name,
-      longi: alamatTujuan.longi || alamatTujuan.longitude,
-      lat: alamatTujuan.lat || alamatTujuan.latitude
-    };
-    existingPatient.nama = nama || existingPatient.nama;
-    existingPatient.umur = umur || existingPatient.umur;
-    existingPatient.jenisPenyakit = jenisPenyakit || existingPatient.jenisPenyakit;
-    existingPatient.catatan = catatan || existingPatient.catatan;
-    existingPatient.kode = kode || existingPatient.kode;
-    existingPatient.alamatRumah = alamatRumah || existingPatient.alamatRumah;
-    existingPatient.alamatTujuan = alamatTujuan || existingPatient.alamatTujuan;
-
-    await existingPatient.save();
+    if (!updatedPatient) {
+      return res.status(404).json({
+        status: 404,
+        success: false,
+        error: 'Patient data not found'
+      });
+    }
 
     res.json({
       status: 200,
