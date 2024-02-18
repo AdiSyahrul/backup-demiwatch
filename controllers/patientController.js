@@ -10,17 +10,6 @@ async function tambahPatient(req, res) {
       error: 'Each column must be filled in'
     });
   }
-  let alamatRumahObj, alamatTujuanObj;
-  try {
-    alamatRumahObj = typeof alamatRumah === 'string' ? JSON.parse(alamatRumah) : alamatRumah;
-    alamatTujuanObj = typeof alamatTujuan === 'string' ? JSON.parse(alamatTujuan) : alamatTujuan;
-  } catch (error) {
-    return res.status(400).json({
-      status: 400,
-      success: false,
-      error: "Invalid JSON format for alamatRumah or alamatTujuan"
-    });
-  }
 
   try {
     const existingKode = await Patient.findOne({ kode });
@@ -45,8 +34,8 @@ async function tambahPatient(req, res) {
       jenisPenyakit,
       catatan,
       kode,
-      alamatRumah : alamatRumahObj,
-      alamatTujuan : alamatTujuanObj,
+      alamatRumah,
+      alamatTujuan,
       createdBy: req.user.userId
     });
     // const user = await User.findByIdAndUpdate(
@@ -133,21 +122,14 @@ async function updatePatient(req, res){
         error: 'You do not have permission to update this patient data'
       });
     }
-    let alamatRumahObj, alamatTujuanObj;
-    try {
-      alamatRumahObj = typeof alamatRumah === 'string' ? JSON.parse(alamatRumah) : alamatRumah;
-      alamatTujuanObj = typeof alamatTujuan === 'string' ? JSON.parse(alamatTujuan) : alamatTujuan;
-    } catch (error) {
-      console.error("Error parsing alamatRumah or alamatTujuan:", error);
-    }
     const updatedPatient = await Patient.findByIdAndUpdate(id, {
       nama,
       umur,
       jenisPenyakit,
       catatan,
       kode,
-      alamatRumah: alamatRumahObj,
-      alamatTujuan: alamatTujuanObj,
+      alamatRumah,
+      alamatTujuan,
     }, { new: true });
 
     if (!updatedPatient) {
