@@ -104,9 +104,9 @@ async function getPatient(req, res) {
 
 async function updatePatient(req, res){
   const { id } = req.params;
-  const { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan} = req.body;
+  let { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan} = req.body;
   try {
-    let existingPatient = await Patient.findById(id);
+    const existingPatient = await Patient.findById(id);
     if (!existingPatient) {
       return res.status(404).json({
         status: 404,
@@ -114,6 +114,7 @@ async function updatePatient(req, res){
         error: 'Patient data not found'
       });
     }
+
     if (existingPatient.createdBy.toString() !== req.user.userId) {
       return res.status(403).json({
         status: 403,
@@ -129,43 +130,45 @@ async function updatePatient(req, res){
       longi: alamatRumah.longi || alamatRumah.longitude,
       lat: alamatRumah.lat || alamatRumah.latitude
     };
+
     alamatTujuan = {
       name: alamatTujuan.name,
       longi: alamatTujuan.longi || alamatTujuan.longitude,
       lat: alamatTujuan.lat || alamatTujuan.latitude
     };
     const updatedPatient = await Patient.findByIdAndUpdate(id, {
-        nama,
-        umur,
-        jenisPenyakit,
-        catatan,
-        kode,
-        alamatRumah,
-        alamatTujuan,
-      }, { new: true });
+      nama,
+      umur,
+      jenisPenyakit,
+      catatan,
+      kode,
+      alamatRumah,
+      alamatTujuan,
+    }, { new: true });
 
-      if (!updatedPatient) {
-        return res.status(404).json({
-          status: 404,
-          success: false,
-          error: 'Patient data not found'
-        });
-      }
-
-      res.json({
-        status: 200,
-        success: true,
-        message: 'Patient data is updated successfully',
-        data: updatedPatient
-      });
-    } catch (error) {
-      res.status(500).json({
-        status: 500,
+    if (!updatedPatient) {
+      return res.status(404).json({
+        status: 404,
         success: false,
-        error: 'An error occurred while updating patient data'
+        error: 'Patient data not found'
       });
     }
+
+    res.json({
+      status: 200,
+      success: true,
+      message: 'Patient data is updated successfully',
+      data: updatedPatient
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 500,
+      success: false,
+      error: 'An error occurred while updating patient data'
+    });
+  }
 }
+
 async function getPatientByKode(kode) {
   return await Patient.findOne({ kode: kode });
 }
