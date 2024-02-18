@@ -10,11 +10,17 @@ async function tambahPatient(req, res) {
       error: 'Each column must be filled in'
     });
   }
-  let alamatRumahObj = JSON.parse(alamatRumah);
-  console.log('Parsed alamatRumah:', alamatRumahObj);
-
-  let alamatTujuanObj = JSON.parse(alamatTujuan);
-  console.log('Parsed alamatTujuan:', alamatTujuanObj);
+  let alamatRumahObj, alamatTujuanObj;
+  try {
+    alamatRumahObj = typeof alamatRumah === 'string' ? JSON.parse(alamatRumah) : alamatRumah;
+    alamatTujuanObj = typeof alamatTujuan === 'string' ? JSON.parse(alamatTujuan) : alamatTujuan;
+  } catch (error) {
+    return res.status(400).json({
+      status: 400,
+      success: false,
+      error: "Invalid JSON format for alamatRumah or alamatTujuan"
+    });
+  }
 
   try {
     const existingKode = await Patient.findOne({ kode });
@@ -109,8 +115,7 @@ async function getPatient(req, res) {
 
 async function updatePatient(req, res){
   const { id } = req.params;
-  const { nama, umur, jenisPenyakit, catatan, kode} = req.body;
-  let { alamatRumah, alamatTujuan } = req.body;
+  const { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan} = req.body;
   try {
     const existingPatient = await Patient.findById(id);
     if (!existingPatient) {
@@ -128,12 +133,12 @@ async function updatePatient(req, res){
         error: 'You do not have permission to update this patient data'
       });
     }
-    console.log('Updating patient data:', { id, nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan });
-    if (typeof alamatRumah === 'string') {
-      alamatRumah = JSON.parse(alamatRumah);
-    }
-    if (typeof alamatTujuan === 'string') {
-      alamatTujuan = JSON.parse(alamatTujuan);
+    let alamatRumahObj, alamatTujuanObj;
+    try {
+      alamatRumahObj = typeof alamatRumah === 'string' ? JSON.parse(alamatRumah) : alamatRumah;
+      alamatTujuanObj = typeof alamatTujuan === 'string' ? JSON.parse(alamatTujuan) : alamatTujuan;
+    } catch (error) {
+      console.error("Error parsing alamatRumah or alamatTujuan:", error);
     }
     const updatedPatient = await Patient.findByIdAndUpdate(id, {
       nama,
@@ -141,8 +146,8 @@ async function updatePatient(req, res){
       jenisPenyakit,
       catatan,
       kode,
-      alamatRumah,
-      alamatTujuan,
+      alamatRumah: alamatRumahObj,
+      alamatTujuan: alamatTujuanObj,
     }, { new: true });
 
     if (!updatedPatient) {
