@@ -106,7 +106,7 @@ async function updatePatient(req, res){
   const { id } = req.params;
   let { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan} = req.body;
   try {
-    const existingPatient = await Patient.findById(id);
+    let existingPatient = await Patient.findById(id);
     if (!existingPatient) {
       return res.status(404).json({
         status: 404,
@@ -122,6 +122,7 @@ async function updatePatient(req, res){
         error: 'You do not have permission to update this patient data'
       });
     }
+    
     if (typeof alamatRumah === 'string') alamatRumah = JSON.parse(alamatRumah);
     if (typeof alamatTujuan === 'string') alamatTujuan = JSON.parse(alamatTujuan);
 
@@ -136,37 +137,61 @@ async function updatePatient(req, res){
       longi: alamatTujuan.longi || alamatTujuan.longitude,
       lat: alamatTujuan.lat || alamatTujuan.latitude
     };
-    const updatedPatient = await Patient.findByIdAndUpdate(id, {
-      nama,
-      umur,
-      jenisPenyakit,
-      catatan,
-      kode,
-      alamatRumah,
-      alamatTujuan,
-    }, { new: true });
+    existingPatient.nama = nama || existingPatient.nama;
+    existingPatient.umur = umur || existingPatient.umur;
+    existingPatient.jenisPenyakit = jenisPenyakit || existingPatient.jenisPenyakit;
+    existingPatient.catatan = catatan || existingPatient.catatan;
+    existingPatient.kode = kode || existingPatient.kode;
+    existingPatient.alamatRumah = alamatRumah || existingPatient.alamatRumah;
+    existingPatient.alamatTujuan = alamatTujuan || existingPatient.alamatTujuan;
 
-    if (!updatedPatient) {
-      return res.status(404).json({
-        status: 404,
-        success: false,
-        error: 'Patient data not found'
-      });
-    }
+    await existingPatient.save();
 
     res.json({
       status: 200,
       success: true,
       message: 'Patient data is updated successfully',
-      data: updatedPatient
+      data: existingPatient // Kirim kembali data yang telah diperbarui
     });
   } catch (error) {
+    console.error(error); // Untuk debugging
     res.status(500).json({
       status: 500,
       success: false,
       error: 'An error occurred while updating patient data'
     });
   }
+  //   const updatedPatient = await Patient.findByIdAndUpdate(id, {
+  //     nama,
+  //     umur,
+  //     jenisPenyakit,
+  //     catatan,
+  //     kode,
+  //     alamatRumah,
+  //     alamatTujuan,
+  //   }, { new: true });
+
+  //   if (!updatedPatient) {
+  //     return res.status(404).json({
+  //       status: 404,
+  //       success: false,
+  //       error: 'Patient data not found'
+  //     });
+  //   }
+
+  //   res.json({
+  //     status: 200,
+  //     success: true,
+  //     message: 'Patient data is updated successfully',
+  //     data: updatedPatient
+  //   });
+  // } catch (error) {
+  //   res.status(500).json({
+  //     status: 500,
+  //     success: false,
+  //     error: 'An error occurred while updating patient data'
+  //   });
+  // }
 }
 
 async function getPatientByKode(kode) {
