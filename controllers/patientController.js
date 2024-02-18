@@ -104,7 +104,7 @@ async function getPatient(req, res) {
 
 async function updatePatient(req, res){
   const { id } = req.params;
-  const { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan} = req.body;
+  let { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan} = req.body;
   try {
     const existingPatient = await Patient.findById(id);
     if (!existingPatient) {
@@ -122,6 +122,20 @@ async function updatePatient(req, res){
         error: 'You do not have permission to update this patient data'
       });
     }
+    if (typeof alamatRumah === 'string') alamatRumah = JSON.parse(alamatRumah);
+    if (typeof alamatTujuan === 'string') alamatTujuan = JSON.parse(alamatTujuan);
+
+    alamatRumah = {
+      name: alamatRumah.name,
+      longi: alamatRumah.longi || alamatRumah.longitude,
+      lat: alamatRumah.lat || alamatRumah.latitude
+    };
+
+    alamatTujuan = {
+      name: alamatTujuan.name,
+      longi: alamatTujuan.longi || alamatTujuan.longitude,
+      lat: alamatTujuan.lat || alamatTujuan.latitude
+    };
     const updatedPatient = await Patient.findByIdAndUpdate(id, {
       nama,
       umur,
