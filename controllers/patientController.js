@@ -16,14 +16,14 @@ async function tambahPatient(req, res) {
     if (typeof alamatTujuan === 'string') alamatTujuan = JSON.parse(alamatTujuan);
     alamatRumah = {
       name: alamatRumah.name,
-      longi: alamatRumah.longi || alamatRumah.longitude,
-      lat: alamatRumah.lat || alamatRumah.latitude
+      longi: alamatRumah.longitude || alamatRumah.longi,
+      lat: alamatRumah.latitude || alamatRumah.lat
     };
 
     alamatTujuan = {
       name: alamatTujuan.name,
-      longi: alamatTujuan.longi || alamatTujuan.longitude,
-      lat: alamatTujuan.lat || alamatTujuan.latitude
+      longi: alamatTujuan.longitude || alamatTujuan.longi,
+      lat: alamatTujuan.latitude || alamatTujuan.lat
     };
     const existingKode = await Patient.findOne({ kode });
     if (existingKode) {
@@ -140,14 +140,14 @@ async function updatePatient(req, res){
 
     alamatRumah = {
       name: alamatRumah.name,
-      longi: alamatRumah.longi || alamatRumah.longitude,
-      lat: alamatRumah.lat || alamatRumah.latitude
+      longi: alamatRumah.longitude || alamatRumah.longi,
+      lat: alamatRumah.latitude || alamatRumah.lat
     };
 
     alamatTujuan = {
       name: alamatTujuan.name,
-      longi: alamatTujuan.longi || alamatTujuan.longitude,
-      lat: alamatTujuan.lat || alamatTujuan.latitude
+      longi: alamatTujuan.longitude || alamatTujuan.longi,
+      lat: alamatTujuan.latitude || alamatTujuan.lat
     };
     const updatedPatient = await Patient.findByIdAndUpdate(id, {
       nama,
