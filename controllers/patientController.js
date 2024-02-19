@@ -157,9 +157,17 @@ async function updatePatient(req, res){
       });
     }
 
-    // Parsing alamatRumah dan alamatTujuan menggunakan fungsi parseAlamat
-    let alamatRumahParsed = parseAlamat(alamatRumah);
-    let alamatTujuanParsed = parseAlamat(alamatTujuan);
+    const alamatRumahUpdated = {
+      name: alamatRumah.name,
+      longi: alamatRumah.homeLongitude, // asumsi nama properti yang diterima adalah homeLongitude
+      lat: alamatRumah.homeLatitude // asumsi nama properti yang diterima adalah homeLatitude
+    };
+
+    const alamatTujuanUpdated = {
+      name: alamatTujuan.name,
+      longi: alamatTujuan.destinationLongitude, // asumsi nama properti yang diterima adalah destinationLongitude
+      lat: alamatTujuan.destinationLatitude // asumsi nama properti yang diterima adalah destinationLatitude
+    };
 
     const updateData = {
       nama,
@@ -167,8 +175,8 @@ async function updatePatient(req, res){
       jenisPenyakit,
       catatan,
       kode,
-      alamatRumah: alamatRumahParsed,
-      alamatTujuan: alamatTujuanParsed,
+      alamatRumah: alamatRumahUpdated,
+      alamatTujuan: alamatTujuanUpdated,
     };
 
     const updatedPatient = await Patient.findByIdAndUpdate(id, updateData, { new: true });
