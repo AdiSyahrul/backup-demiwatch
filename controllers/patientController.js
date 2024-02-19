@@ -138,26 +138,33 @@ async function updatePatient(req, res){
     if (typeof alamatRumah === 'string') alamatRumah = JSON.parse(alamatRumah);
     if (typeof alamatTujuan === 'string') alamatTujuan = JSON.parse(alamatTujuan);
 
-    alamatRumah = {
-      name: alamatRumah.name,
-      longi: alamatRumah.longitude || alamatRumah.longi,
-      lat: alamatRumah.latitude || alamatRumah.lat
-    };
+    // alamatRumah = {
+    //   name: alamatRumah.name,
+    //   longi: alamatRumah.longitude || alamatRumah.longi,
+    //   lat: alamatRumah.latitude || alamatRumah.lat
+    // };
 
-    alamatTujuan = {
-      name: alamatTujuan.name,
-      longi: alamatTujuan.longitude || alamatTujuan.longi,
-      lat: alamatTujuan.latitude || alamatTujuan.lat
+    // alamatTujuan = {
+    //   name: alamatTujuan.name,
+    //   longi: alamatTujuan.longitude || alamatTujuan.longi,
+    //   lat: alamatTujuan.latitude || alamatTujuan.lat
+    // };
+    const updateData =  {
+      '$set' : {
+        nama,
+        umur,
+        jenisPenyakit,
+        catatan,
+        kode,
+        'alamatRumah.name': alamatRumah.name,
+        'alamatRumah.longi': alamatRumah.longitude || alamatRumah.longi,
+        'alamatRumah.lat': alamatRumah.latitude || alamatRumah.lat,
+        'alamatTujuan.name': alamatTujuan.name,
+        'alamatTujuan.longi': alamatTujuan.longitude || alamatTujuan.longi,
+        'alamatTujuan.lat': alamatTujuan.latitude || alamatTujuan.lat
+      }
     };
-    const updatedPatient = await Patient.findByIdAndUpdate(id, {
-      nama,
-      umur,
-      jenisPenyakit,
-      catatan,
-      kode,
-      alamatRumah,
-      alamatTujuan,
-    }, { new: true });
+    const updatedPatient = await Patient.findByIdAndUpdate(id, updateData, { new: true });
 
     if (!updatedPatient) {
       return res.status(404).json({
