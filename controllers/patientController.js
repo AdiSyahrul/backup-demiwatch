@@ -114,97 +114,30 @@ async function getPatient(req, res) {
   }
 }
 
-// async function updatePatient(req, res){
-//   const { id } = req.params;
-//   let { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan} = req.body;
-//   try {
-//     const existingPatient = await Patient.findById(id);
-//     if (!existingPatient) {
-//       return res.status(404).json({
-//         status: 404,
-//         success: false,
-//         error: 'Patient data not found'
-//       });
-//     }
+function parseAlamat(input) {
+  let parsedInput;
+  if (typeof input === 'string') {
+    try {
+      parsedInput = JSON.parse(input);
+    } catch (error) {
+      throw new Error('Invalid JSON format');
+    }
+  } else {
+    parsedInput = input;
+  }
 
-//     if (existingPatient.createdBy.toString() !== req.user.userId) {
-//       return res.status(403).json({
-//         status: 403,
-//         success: false,
-//         error: 'You do not have permission to update this patient data'
-//       });
-//     }
-//     if (typeof alamatRumah === 'string') {
-//       let parsedAlamatRumah = JSON.parse(alamatRumah);
-//       alamatRumah = {
-//         name: parsedAlamatRumah.name,
-//         longi: parsedAlamatRumah.longitude,
-//         lat: parsedAlamatRumah.latitude
-//       };
-//     }
-    
-//     if (typeof alamatTujuan === 'string') {
-//       let parsedAlamatTujuan = JSON.parse(alamatTujuan);
-//       alamatTujuan = {
-//         name: parsedAlamatTujuan.name,
-//         longi: parsedAlamatTujuan.longitude,
-//         lat: parsedAlamatTujuan.latitude
-//       };
-//     }
-    
-//     const updatedPatient = await Patient.findByIdAndUpdate(id, {
-//       nama,
-//       umur,
-//       jenisPenyakit,
-//       catatan,
-//       kode,
-//       alamatRumah,
-//       alamatTujuan,
-//     }, { new: true });
+  return {
+    name: parsedInput.name,
+    longi: parsedInput.longitude,
+    lat: parsedInput.latitude
+  };
+}
 
-//     if (!updatedPatient) {
-//       return res.status(404).json({
-//         status: 404,
-//         success: false,
-//         error: 'Patient data not found'
-//       });
-//     }
-
-//     res.json({
-//       status: 200,
-//       success: true,
-//       message: 'Patient data is updated successfully',
-//       data: updatedPatient
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       status: 500,
-//       success: false,
-//       error: 'An error occurred while updating patient data'
-//     });
-//   }
-// }
 async function updatePatient(req, res){
   const { id } = req.params;
-
-  // Data hard-coded untuk tes
-  const testData = {
-    nama: "Nama Tes",
-    umur: 30,
-    jenisPenyakit: "Tes Penyakit",
-    catatan: "Ini adalah catatan tes",
-    kode: "Kode123",
-    alamatRumah: {
-      name: "Rumah Tes",
-      longi: 112.780,
-      lat: -7.280
-    },
-    alamatTujuan: {
-      name: "Supermarket Tes",
-      longi: 112.790,
-      lat: -7.290
-    }
-  };
+  let { nama, umur, jenisPenyakit, catatan, kode } = req.body;
+  let alamatRumah = req.body.alamatRumah;
+  let alamatTujuan = req.body.alamatTujuan;
 
   try {
     const existingPatient = await Patient.findById(id);
@@ -223,8 +156,22 @@ async function updatePatient(req, res){
         error: 'You do not have permission to update this patient data'
       });
     }
-    
-    const updatedPatient = await Patient.findByIdAndUpdate(id, testData, { new: true });
+
+    // Parsing alamatRumah dan alamatTujuan menggunakan fungsi parseAlamat
+    let alamatRumahParsed = parseAlamat(alamatRumah);
+    let alamatTujuanParsed = parseAlamat(alamatTujuan);
+
+    const updateData = {
+      nama,
+      umur,
+      jenisPenyakit,
+      catatan,
+      kode,
+      alamatRumah: alamatRumahParsed,
+      alamatTujuan: alamatTujuanParsed,
+    };
+
+    const updatedPatient = await Patient.findByIdAndUpdate(id, updateData, { new: true });
 
     if (!updatedPatient) {
       return res.status(404).json({
@@ -244,11 +191,10 @@ async function updatePatient(req, res){
     res.status(500).json({
       status: 500,
       success: false,
-      error: 'An error occurred while updating patient data'
+      error: `An error occurred while updating patient data: ${error.message}`
     });
   }
 }
-
 
 async function getPatientByKode(kode) {
   return await Patient.findOne({ kode: kode });
