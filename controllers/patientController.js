@@ -58,7 +58,8 @@ async function tambahPatient(req, res) {
     // );
     const updatedUser = await User.findByIdAndUpdate(
       req.user.userId,
-      { $set: { patients: [dataPatient._id] } },
+      { $set: { patients: [dataPatient._id] } }, 
+      { new: true }
     );
 
 
@@ -116,9 +117,7 @@ async function getPatient(req, res) {
 
 async function updatePatient(req, res){
   const { id } = req.params;
-  let { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan } = req.body;
-  console.log("Received data for updatePatient:", req.body);
-
+  let { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan} = req.body;
   try {
     const existingPatient = await Patient.findById(id);
     if (!existingPatient) {
@@ -136,30 +135,29 @@ async function updatePatient(req, res){
         error: 'You do not have permission to update this patient data'
       });
     }
+    if (typeof alamatRumah === 'string') alamatRumah = JSON.parse(alamatRumah);
+    if (typeof alamatTujuan === 'string') alamatTujuan = JSON.parse(alamatTujuan);
 
-    const alamatRumahUpdated = {
+    alamatRumah = {
       name: alamatRumah.name,
-      longi: alamatRumah.longitude || alamatRumah.longi, 
+      longi: alamatRumah.longitude || alamatRumah.longi,
       lat: alamatRumah.latitude || alamatRumah.lat
     };
 
-    const alamatTujuanUpdated = {
+    alamatTujuan = {
       name: alamatTujuan.name,
-      longi: alamatTujuan.longitude || alamatTujuan.longi, 
+      longi: alamatTujuan.longitude || alamatTujuan.longi,
       lat: alamatTujuan.latitude || alamatTujuan.lat
     };
-
-    const updateData = {
+    const updatedPatient = await Patient.findByIdAndUpdate(id, {
       nama,
       umur,
       jenisPenyakit,
       catatan,
       kode,
-      alamatRumah: alamatRumahUpdated,
-      alamatTujuan: alamatTujuanUpdated,
-    };
-
-    const updatedPatient = await Patient.findByIdAndUpdate(id, updateData, { new: true });
+      alamatRumah,
+      alamatTujuan,
+    }, { new: true });
 
     if (!updatedPatient) {
       return res.status(404).json({
@@ -179,7 +177,7 @@ async function updatePatient(req, res){
     res.status(500).json({
       status: 500,
       success: false,
-      error: `An error occurred while updating patient data: ${error.message}`
+      error: 'An error occurred while updating patient data'
     });
   }
 }
