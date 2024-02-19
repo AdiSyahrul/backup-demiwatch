@@ -136,8 +136,8 @@ async function updatePatient(req, res){
         error: 'You do not have permission to update this patient data'
       });
     }
-    if (typeof alamatRumah === 'string') alamatRumah = JSON.parse(alamatRumah);
-    if (typeof alamatTujuan === 'string') alamatTujuan = JSON.parse(alamatTujuan);
+    // if (typeof alamatRumah === 'string') alamatRumah = JSON.parse(alamatRumah);
+    // if (typeof alamatTujuan === 'string') alamatTujuan = JSON.parse(alamatTujuan);
 
     alamatRumah = {
       name: alamatRumah.name,
