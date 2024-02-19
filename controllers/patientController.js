@@ -114,25 +114,6 @@ async function getPatient(req, res) {
   }
 }
 
-function parseAlamat(input) {
-  let parsedInput;
-  if (typeof input === 'string') {
-    try {
-      parsedInput = JSON.parse(input);
-    } catch (error) {
-      throw new Error('Invalid JSON format');
-    }
-  } else {
-    parsedInput = input;
-  }
-
-  return {
-    name: parsedInput.name,
-    longi: parsedInput.longitude,
-    lat: parsedInput.latitude
-  };
-}
-
 async function updatePatient(req, res){
   const { id } = req.params;
   let { nama, umur, jenisPenyakit, catatan, kode } = req.body;
@@ -159,14 +140,14 @@ async function updatePatient(req, res){
 
     const alamatRumahUpdated = {
       name: alamatRumah.name,
-      longi: alamatRumah.longitude, // asumsi nama properti yang diterima adalah homeLongitude
-      lat: alamatRumah.latitude // asumsi nama properti yang diterima adalah homeLatitude
+      longi: alamatRumah.longitude || alamatRumah.longi, 
+      lat: alamatRumah.latitude || alamatRumah.lat
     };
 
     const alamatTujuanUpdated = {
       name: alamatTujuan.name,
-      longi: alamatTujuan.longitude, // asumsi nama properti yang diterima adalah destinationLongitude
-      lat: alamatTujuan.latitude // asumsi nama properti yang diterima adalah destinationLatitude
+      longi: alamatTujuan.longitude || alamatTujuan.longi, 
+      lat: alamatTujuan.latitude || alamatTujuan.lat
     };
 
     const updateData = {
