@@ -58,8 +58,7 @@ async function tambahPatient(req, res) {
     // );
     const updatedUser = await User.findByIdAndUpdate(
       req.user.userId,
-      { $set: { patients: [dataPatient._id] } }, // Menggunakan $set untuk mengganti array patients
-      { new: true }
+      { $set: { patients: [dataPatient._id] } },
     );
 
 
@@ -157,11 +156,11 @@ async function updatePatient(req, res){
         catatan,
         kode,
         'alamatRumah.name': alamatRumah.name,
-        'alamatRumah.longi': alamatRumah.longitude || alamatRumah.longi,
-        'alamatRumah.lat': alamatRumah.latitude || alamatRumah.lat,
+        'alamatRumah.longi': alamatRumah.longi || alamatRumah.longitude,
+        'alamatRumah.lat': alamatRumah.lat || alamatRumah.latitude,
         'alamatTujuan.name': alamatTujuan.name,
-        'alamatTujuan.longi': alamatTujuan.longitude || alamatTujuan.longi,
-        'alamatTujuan.lat': alamatTujuan.latitude || alamatTujuan.lat
+        'alamatTujuan.longi': alamatTujuan.longi|| alamatTujuan.longitude ,
+        'alamatTujuan.lat': alamatTujuan.lat || alamatTujuan.latitude
       }
     };
     const updatedPatient = await Patient.findByIdAndUpdate(id, updateData, { new: true });
