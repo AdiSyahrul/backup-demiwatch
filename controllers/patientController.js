@@ -116,9 +116,8 @@ async function getPatient(req, res) {
 
 async function updatePatient(req, res){
   const { id } = req.params;
-  let { nama, umur, jenisPenyakit, catatan, kode } = req.body;
-  let alamatRumah = req.body.alamatRumah;
-  let alamatTujuan = req.body.alamatTujuan;
+  let { nama, umur, jenisPenyakit, catatan, kode, alamatRumah, alamatTujuan } = req.body;
+  console.log("Received data for updatePatient:", req.body);
 
   try {
     const existingPatient = await Patient.findById(id);
