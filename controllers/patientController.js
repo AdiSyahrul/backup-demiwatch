@@ -156,11 +156,11 @@ async function updatePatient(req, res){
         catatan,
         kode,
         'alamatRumah.name': alamatRumah.name,
-        'alamatRumah.longi': alamatRumah.longi || alamatRumah.longitude,
-        'alamatRumah.lat': alamatRumah.lat || alamatRumah.latitude,
+        'alamatRumah.longi': alamatRumah.longi ,
+        'alamatRumah.lat': alamatRumah.lat ,
         'alamatTujuan.name': alamatTujuan.name,
-        'alamatTujuan.longi': alamatTujuan.longi|| alamatTujuan.longitude ,
-        'alamatTujuan.lat': alamatTujuan.lat || alamatTujuan.latitude
+        'alamatTujuan.longi': alamatTujuan.longi,
+        'alamatTujuan.lat': alamatTujuan.lat
       }
     };
     const updatedPatient = await Patient.findByIdAndUpdate(id, updateData, { new: true });
